@@ -168,7 +168,7 @@ def calculate_corrections(simulation, Hamiltonian, ti, target, Nstep):
 
     return corrected_fidelities
 
-def time_evolution(Ham, initial_state, initial_time, final_time, timesteps, progessbar = None):
+def time_evolution(Ham, initial_state, initial_time, final_time, timesteps, dephasing_rates = None, progessbar = None):
     '''
     Simulation of transport protocol
 
@@ -179,6 +179,13 @@ def time_evolution(Ham, initial_state, initial_time, final_time, timesteps, prog
     '''
     hamiltonian_object = Ham.ham
     times = np.linspace(initial_time, final_time, timesteps)
+
+    dephasing_ops = []
+
+    if dephasing_rates:
+        for index, gamma in enumerate(dephasing_rates):
+            dephasing_ops.append(np.sqrt(gamma)*Ham.sz_list[index])
+
     #apply hamiltonian to initial state and don't track any observables
 
     options = {'method': 'adams'}
@@ -188,7 +195,7 @@ def time_evolution(Ham, initial_state, initial_time, final_time, timesteps, prog
         'method': 'adams', 
         'progress_bar': 'tqdm'
         }
-    simulation_results = qt.sesolve(hamiltonian_object, initial_state, times, options = options)
+    simulation_results = qt.mesolve(hamiltonian_object, initial_state, times, dephasing_ops, [], options = options)
 
     return simulation_results
 

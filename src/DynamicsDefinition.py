@@ -35,8 +35,7 @@ class Hamiltonian:
         self.lambda_factor = lambda_factor
         self.J = global_J
         self.V = barrier_size
-        self.V_index = barrier_location
-        
+        self.V_index = barrier_location    
 
         self.j_err = j_error
         self.l_err = l_error
