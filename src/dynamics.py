@@ -168,7 +168,7 @@ def calculate_corrections(simulation, Hamiltonian, ti, target, Nstep):
 
     return corrected_fidelities
 
-def time_evolution(Ham, initial_state, initial_time, final_time, timesteps, dephasing_rates = None, progessbar = None):
+def time_evolution(Ham, initial_state, initial_time, final_time, timesteps, dephasing_rates = None, environment = False, progessbar = None):
     '''
     Simulation of transport protocol
 
@@ -195,7 +195,11 @@ def time_evolution(Ham, initial_state, initial_time, final_time, timesteps, deph
         'method': 'adams', 
         'progress_bar': 'tqdm'
         }
-    simulation_results = qt.mesolve(hamiltonian_object, initial_state, times, dephasing_ops, [], options = options)
+
+    if environment == True:
+        simulation_results = qt.mesolve(hamiltonian_object, initial_state, times, dephasing_ops, [], options = options)
+    elif environment == False:
+        simulation_results = qt.sesolve(hamiltonian_object, initial_state, times, options = options)
 
     return simulation_results
 
@@ -237,7 +241,7 @@ def calculate_full_fidelity_standard(state_evolution, target_state, N = None):
     return fidelity
 
 
-def calculate_expectation_values(state_evolution, Hamiltonian):
+def single_qubit_expectation_values(state_evolution, Hamiltonian, obs_dict = {}):
     """
     Calculate expectation value of spin X,Y,Z on time evolution of chain
 
@@ -253,14 +257,38 @@ def calculate_expectation_values(state_evolution, Hamiltonian):
     sigma_y_list = Hamiltonian.sy_list
     sigma_z_list = Hamiltonian.sz_list
 
-    magn_t = {}
 
     #calculate expectation value of sz for each spin
-    magn_t["Sx"] = calculate_observable_along_chain(state_evolution, sigma_x_list)
-    magn_t["Sy"] = calculate_observable_along_chain(state_evolution, sigma_y_list)
-    magn_t["Sz"] = calculate_observable_along_chain(state_evolution, sigma_z_list)
+    obs_dict["Sx"] = calculate_observable_along_chain(state_evolution, sigma_x_list)
+    obs_dict["Sy"] = calculate_observable_along_chain(state_evolution, sigma_y_list)
+    obs_dict["Sz"] = calculate_observable_along_chain(state_evolution, sigma_z_list)
 
-    return magn_t
+    return obs_dict
+
+
+def two_qubit_expectation_values(state_evolution, Hamiltonian, obs_dict = {}):
+    """
+    Calculate expectation value of spin XX, YY, and ZZ on time evolution of chain
+
+    Args:
+        state_evolution: result of qutip.sesolve of length Nsteps
+        Hamiltonian: qutip object containing properties of transport Hamiltonian
+
+    Returns:
+        magn_t: Dictionary containing result of each observable for each qubit and each timestep
+    """   
+    Hamiltonian.calculate_two_body_operators()
+    sigma_xx_list = Hamiltonian.sxx_list
+    sigma_yy_list = Hamiltonian.syy_list
+    sigma_zz_list = Hamiltonian.szz_list
+
+
+    #calculate expectation value of sz for each spin
+    obs_dict["Sxx"] = calculate_observable_along_chain(state_evolution, sigma_xx_list)
+    obs_dict["Syy"] = calculate_observable_along_chain(state_evolution, sigma_yy_list)
+    obs_dict["Szz"] = calculate_observable_along_chain(state_evolution, sigma_zz_list)
+
+    return obs_dict
 
 def calculate_observable_along_chain(state_evolution, observable):
     """

@@ -68,6 +68,26 @@ class Hamiltonian:
         return sx_list, sy_list, sz_list
     
 
+    def calculate_two_body_operators(self):
+        '''
+        Make list of two body operators xx, yy, and zz
+        '''
+        self.sxx_list, self.syy_list, self.szz_list = [], [], []
+        for i in range(self.n_spins -1):
+            #initialize list of identity
+            op_list = [qt.qeye(2)] * self.n_spins
+            #replace operators on 2 neighboring spins
+            op_list[i], op_list[i+1] = sx, sx
+            #append tensor prod of chain to list
+            self.sxx_list.append(qt.tensor(op_list))
+            #repeat for yy and zz
+            op_list[i], op_list[i+1] = sy, sy
+            self.syy_list.append(qt.tensor(op_list))
+            op_list[i], op_list[i+1] = sz, sz
+            self.szz_list.append(qt.tensor(op_list))
+
+        return
+    
     def _calculate_couplings(self):
         """
         Calculate couplings for lambda, J and z fields for different situations (standard or domain walls)

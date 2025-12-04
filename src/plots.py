@@ -15,7 +15,7 @@ def plot_expectations(data, N, J, V, ti, tf, filepath=None):
     # ========== SIMPLIFIED LINE PLOT ==========
     ax = fig.add_subplot(111)
 
-    for i in range(N):
+    for i in range(data.shape[1]):
         magn = data[:,i]
         norm_time = np.linspace(ti, tf, len(magn))
 
@@ -29,7 +29,7 @@ def plot_expectations(data, N, J, V, ti, tf, filepath=None):
         ax.plot(norm_time, magn, **lineprops)
 
     # Formatting
-    ax.set_xlabel(r'Time $t/\tau_{\mathrm{transfer}}$', fontsize=12)
+    ax.set_xlabel(r'Time [ns]', fontsize=12)
     ax.set_ylabel(r'Magnetization $\langle Z \rangle$', fontsize=12)
     ax.set_ylim(-1.1, 1.1)
     ax.set_xlim(ti, tf)
@@ -75,8 +75,8 @@ def plot_heatmap(data, N, J, V, ti, tf, filepath=None):
         data.T,
         aspect='auto',
         cmap='coolwarm',
-        vmin=-1,
-        vmax=1,
+        vmin=np.min(data),
+        vmax=np.max(data),
         extent=(ti, tf, 0, N),
         origin='lower',
         interpolation='none'  # Sharp color boundaries
