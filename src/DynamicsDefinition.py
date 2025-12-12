@@ -102,8 +102,8 @@ class Hamiltonian:
         couplings = {}
 
         #Define ideal transverse fields
-        error_free_l = [self.lambda_factor]*(self.n_spins)
-        #error_free_l = error_free_l = mirror_symmetric_terms(self.n_spins, self.lambda_factor)
+        #error_free_l = [self.lambda_factor]*(self.n_spins)
+        error_free_l = error_free_l = mirror_symmetric_terms(self.n_spins, self.lambda_factor)
 
         #errors in transverse fields
         if self.l_err and self.l_err != 0.0:
@@ -152,6 +152,7 @@ class Hamiltonian:
 
         #Potential barrier
         H += -0.5*self.V*self.sz_list[self.V_index]*self.sz_list[self.V_index +1]
+        # H += -0.5*self.V*self.sz_list[self.V_index +1]*self.sz_list[self.V_index +2]
         
         #Residual z fields
         for i in range(0,self.n_spins):
