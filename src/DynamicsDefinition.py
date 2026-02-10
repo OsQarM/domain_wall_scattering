@@ -19,7 +19,7 @@ def mirror_symmetric_terms(size, factor):
 class Hamiltonian:
     '''Hamiltonian object. It is first initialized, then chosen the type    
     '''
-    def __init__(self, system_size, lambda_factor, global_J, barrier_size, barrier_location,
+    def __init__(self, system_size, lambda_factor, global_J, barrier_size, barrier_location, H_type = 'diffusion',
                  j_error = None, z_error = None, l_error = None):
         '''
         Args:
@@ -35,7 +35,8 @@ class Hamiltonian:
         self.lambda_factor = lambda_factor
         self.J = global_J
         self.V = barrier_size
-        self.V_index = barrier_location    
+        self.V_index = barrier_location  
+        self.H_type = H_type  
 
         self.j_err = j_error
         self.l_err = l_error
@@ -102,8 +103,12 @@ class Hamiltonian:
         couplings = {}
 
         #Define ideal transverse fields
-        error_free_l = [self.lambda_factor]*(self.n_spins)
-        #error_free_l = error_free_l = mirror_symmetric_terms(self.n_spins, self.lambda_factor)
+        if self.H_type == 'diffusion':
+            error_free_l = [self.lambda_factor]*(self.n_spins)
+        elif self.H_type == 'transport':
+            error_free_l = error_free_l = mirror_symmetric_terms(self.n_spins, self.lambda_factor)
+        else:
+            raise ValueError(f"{self.H_type} is not a valid Hamiltonian type. Enter 'diffusion' or 'transport'")
 
         #errors in transverse fields
         if self.l_err and self.l_err != 0.0:
