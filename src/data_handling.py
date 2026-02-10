@@ -27,11 +27,13 @@ def save_numpy_array(fidelity_data, filepath):
     
     # Check if file already exists
     if os.path.exists(filepath):
-        raise FileExistsError(f"File '{filepath}' already exists. Operation aborted to prevent overwriting.")
+        print(f"Warning: File '{filepath}' already exists. Skipping to prevent overwriting.")
+        
+    else:
+        # Save the data
+        np.save(filepath, fidelity_data)
+        print(f"Data successfully saved to: {filepath}")
     
-    # Save the data
-    np.save(filepath, fidelity_data)
-    print(f"Data successfully saved to: {filepath}")
     return
 
 
